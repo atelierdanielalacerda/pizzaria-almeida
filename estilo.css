@@ -492,5 +492,39 @@ label span{
     align-items: flex-start;
     gap: 12px;
   }
+  .admin-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.admin-logo {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #ffd34d;
+  background: #fff;
+}
+
+.admin-brand p {
+  margin: 4px 0 0;
+  color: #b42318;
+  font-weight: 700;
+}
+
+.order-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.order-info {
+  background: #fff3d6;
+  border-radius: 16px;
+  padding: 12px;
+  margin: 12px 0;
+}
 }
 
