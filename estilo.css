@@ -339,6 +339,118 @@ button{cursor:pointer;border:0}
 .admin-actions .danger{
   background:#b42318
 }
+/* ================= TAMANHOS ================= */
+
+.size-grid{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-bottom:12px;
+}
+
+.size-grid button{
+  background:#fff;
+  border:1px solid #f1d28a;
+  border-radius:16px;
+  padding:10px 14px;
+  font-weight:700;
+  color:#7a2e1d;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  transition:0.2s;
+}
+
+.size-grid button small{
+  font-size:12px;
+  color:#7a2e1d;
+}
+
+.size-grid button:hover{
+  background:#fff3d6;
+}
+
+/* BOTÃO SELECIONADO */
+.size-grid button.selected{
+  background:#b42318;
+  color:#fff;
+  border-color:#b42318;
+}
+
+.size-grid button.selected small{
+  color:#fff;
+}
+
+
+/* ================= FILTROS ================= */
+
+.filters{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-bottom:12px;
+}
+
+.filters button{
+  background:#fff;
+  border:1px solid #f1d28a;
+  border-radius:16px;
+  padding:10px 14px;
+  font-weight:700;
+  color:#7a2e1d;
+  transition:0.2s;
+}
+
+.filters button:hover{
+  background:#fff3d6;
+}
+
+.filters button.active{
+  background:#b42318;
+  color:#fff;
+  border-color:#b42318;
+}
+
+
+/* ================= PRODUTO SELECIONADO ================= */
+
+.product.selected{
+  border:2px solid #b42318;
+  transform:scale(1.02);
+}
+
+
+/* ================= BOXES ================= */
+
+.box{
+  margin-top:16px;
+  background:#fff;
+  padding:14px;
+  border-radius:20px;
+  border:1px solid #f1d28a;
+}
+
+.option-grid{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-top:10px;
+}
+
+.option-grid button{
+  background:#fff;
+  border:1px solid #f1d28a;
+  border-radius:16px;
+  padding:10px 14px;
+  font-weight:700;
+  color:#7a2e1d;
+}
+
+.option-grid button.selected{
+  background:#b42318;
+  color:#fff;
+  border-color:#b42318;
+}
 
 /* ================= RESPONSIVO ================= */
 
