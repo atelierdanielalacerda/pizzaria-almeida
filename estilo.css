@@ -381,6 +381,17 @@ label span{
   background: #fffaf2;
   padding: 24px;
 }
+  .admin-head img,
+.admin-logo {
+  width: 56px !important;
+  height: 56px !important;
+  max-width: 56px !important;
+  max-height: 56px !important;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #ffd34d;
+  background: #fff;
+}
 
 .admin-head {
   display: flex;
