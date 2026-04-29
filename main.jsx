@@ -221,7 +221,7 @@ function App() {
   function resumoTexto() {
     const itens = carrinho.map((item, i) => `${i + 1}. ${item.tipo}: ${item.nome} (${item.detalhe}) - ${moeda(item.valor)}`).join('\n');
    return `*Novo pedido - Pizzaria Almeida*
-          __________________________________
+   __________________________________
 
 *Cliente:* ${cliente.nome}
 *WhatsApp:* ${cliente.whatsapp}
