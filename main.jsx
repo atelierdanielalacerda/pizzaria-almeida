@@ -3,7 +3,7 @@ import ReactDOM from "react-dom/client";
 import "./estilo.css";
 
 const WHATSAPP_PIZZARIA = '5575999179765';
-const PIX_CHAVE = '5575999179765';
+const PIX_CHAVE = '75999179765';
 const PIX_NOME = 'Marilane Jesus de Almeida';
 const PIX_BANCO = 'Nubank';
 const ADMIN_SENHA = '816521';
