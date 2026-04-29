@@ -239,8 +239,6 @@ ${pagamento === 'cartao' ? `Taxa cartão: ${moeda(taxaCartao)}
 ` : ''}*Total: ${moeda(totalGeral)}*`;
 }
 
-function finalizarPedido() {
-
   function finalizarPedido() {
     if (!carrinho.length) return avisar('Seu carrinho está vazio.');
     if (!validarCliente()) return;
