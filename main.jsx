@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import ReactDOM from "react-dom/client";
 import "./estilo.css";
+
 const WHATSAPP_PIZZARIA = '5575999179765';
 const PIX_CHAVE = '5575999179765';
 const PIX_NOME = 'Marilane Jesus de Almeida';
