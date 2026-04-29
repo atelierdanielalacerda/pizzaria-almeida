@@ -1,11 +1,3 @@
-import React, { useMemo, useState, useEffect } from 'react';
-import { createRoot } from 'react-dom/client';
-import './estilo.css';
-import tradicionalImg from './tradicional.png';
-import especialImg from './especial.png';
-import doceImg from './doce.png';
-import miniPizzaImg from './minipizza.jpg';
-
 const WHATSAPP_PIZZARIA = '5575999179765';
 const PIX_CHAVE = '5575999179765';
 const PIX_NOME = 'Marilane Jesus de Almeida';
