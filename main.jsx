@@ -14,10 +14,11 @@ const ADMIN_SENHA = '816521';
 const TAXA_CARTAO_PERCENTUAL = 0.05;
 
 const imagens = {
-  tradicional: tradicionalImg,
-  especial: especialImg,
-  doce: doceImg,
-  miniPizza: miniPizzaImg,
+  tradicional: "./tradicional.png",
+  especial: "./especial.png",
+  doce: "./doce.png",
+  miniPizza: "./minipizza.jpg"
+  const LOGO_URL = "./logo.png";
 };
 
 const pizzas = [
