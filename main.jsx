@@ -337,7 +337,45 @@ function PixBox({ avisar }) {
   </button>
 </div>
 }
-function AdminLogin({ entrar, voltar }) { const [senha, setSenha] = useState(''); const [erro, setErro] = useState(''); function submit(e) { e.preventDefault(); if (senha === ADMIN_SENHA) entrar(); else setErro('Senha incorreta.'); } return <div className="admin-screen"><form className="login" onSubmit={submit}><h1>Área administrativa</h1><input type="password" value={senha} onChange={(e) => setSenha(e.target.value)} placeholder="Senha do admin" />{erro && <p className="error">{erro}</p>}<button className="primary">Entrar</button><button type="button" className="brown" onClick={voltar}>Voltar</button></form></div>; }
+function AdminLogin({ entrar, voltar }) {
+  const [senha, setSenha] = useState('');
+  const [erro, setErro] = useState('');
+
+  function submit(e) {
+    e.preventDefault();
+    if (senha === ADMIN_SENHA) entrar();
+    else setErro('Senha incorreta.');
+  }
+
+  return (
+    <div className="admin-screen">
+      <form className="login-card" onSubmit={submit}>
+        
+        <h1>Área administrativa</h1>
+
+        <div className="admin-login">
+          <input
+            type="password"
+            value={senha}
+            onChange={(e) => setSenha(e.target.value)}
+            placeholder="Senha do admin"
+          />
+
+          <button type="submit" className="primary">
+            Entrar
+          </button>
+
+          <button type="button" className="brown" onClick={voltar}>
+            Voltar
+          </button>
+        </div>
+
+        {erro && <p className="error">{erro}</p>}
+
+      </form>
+    </div>
+  );
+}
 function AdminView({ pedidos, setPedidos, voltar }) {
   const hoje = new Date().toLocaleDateString('pt-BR');
   const mesAtual = hoje.slice(3);
