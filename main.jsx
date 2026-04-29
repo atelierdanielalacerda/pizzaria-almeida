@@ -16,7 +16,7 @@ const imagens = {
   miniPizza: "/minipizza.jpg",
 };
 
-const LOGO_URL = "/Logo.png";
+const LOGO_URL = "/public/Logo.png";
 
 const pizzas = [
   { id: 'a-moda', categoria: 'Pizza Tradicional', nome: 'A moda', descricao: 'Molho, queijo mussarela, presunto, calabresa moída e orégano', precos: { pequena: 25, media: 35, grande: 40, familia: 50 } },
@@ -305,13 +305,12 @@ function PixBox({ avisar }) {
       avisar('Toque no campo da chave e copie manualmente.');
     }
   }
-  return <div className="pix">
-    <p><b>Recebedor:</b> {PIX_NOME}</p>
-    <p><b>Banco:</b> {PIX_BANCO}</p>
-    <p><b>Chave Pix:</b></p>
-    <textarea readOnly value={PIX_CHAVE} onFocus={(e) => e.target.select()} />
-    <button className="brown" onClick={copiar}>{copiado ? 'Copiado' : 'Copiar chave Pix'}</button>
-  </div>;
+  return <div className="pix-line">
+  <span><b>Chave Pix:</b> {PIX_CHAVE}</span>
+  <button className="brown" onClick={copiar}>
+    {copiado ? 'Copiado' : 'Copiar Pix'}
+  </button>
+</div>
 }
 function AdminLogin({ entrar, voltar }) { const [senha, setSenha] = useState(''); const [erro, setErro] = useState(''); function submit(e) { e.preventDefault(); if (senha === ADMIN_SENHA) entrar(); else setErro('Senha incorreta.'); } return <div className="admin-screen"><form className="login" onSubmit={submit}><h1>Área administrativa</h1><input type="password" value={senha} onChange={(e) => setSenha(e.target.value)} placeholder="Senha do admin" />{erro && <p className="error">{erro}</p>}<button className="primary">Entrar</button><button type="button" className="brown" onClick={voltar}>Voltar</button></form></div>; }
 function AdminView({ pedidos, setPedidos, voltar }) { const hoje = new Date().toLocaleDateString('pt-BR'); const mesAtual = hoje.slice(3); const pedidosHoje = pedidos.filter(p => String(p.data || '').startsWith(hoje)); const pedidosMes = pedidos.filter(p => String(p.data || '').slice(3, 10) === mesAtual); const fatHoje = pedidosHoje.reduce((s, p) => s + Number(p.totalGeral || 0) - Number(p.taxaCartao || 0), 0); const fatMes = pedidosMes.reduce((s, p) => s + Number(p.totalGeral || 0) - Number(p.taxaCartao || 0), 0); function abrirAviso(pedido, status) { const msg = status === 'Em produção' ? `Olá, ${pedido.cliente.nome}! Seu pedido na Pizzaria Almeida já entrou em produção. Em breve avisaremos quando estiver a caminho.` : `Olá, ${pedido.cliente.nome}! Seu pedido da Pizzaria Almeida saiu para entrega e já está indo até você.`; window.open(`https://wa.me/${normalizarWhatsApp(pedido.cliente.whatsapp)}?text=${encodeURIComponent(msg)}`, '_blank', 'noopener,noreferrer'); } function mudarStatus(pedido, status) { setPedidos(old => old.map(p => p.id === pedido.id ? { ...p, status } : p)); if (status === 'Em produção' || status === 'Saiu para entrega') abrirAviso(pedido, status); } return <div className="admin-screen"><header className="admin-head"><h1>Admin • Pizzaria Almeida</h1><button onClick={voltar}>Voltar</button></header><div className="kpis"><div><span>Pedidos hoje</span><b>{pedidosHoje.length}</b></div><div><span>Faturamento líquido hoje</span><b>{moeda(fatHoje)}</b></div><div><span>Pedidos mês</span><b>{pedidosMes.length}</b></div><div><span>Faturamento líquido mês</span><b>{moeda(fatMes)}</b></div></div>{!pedidos.length ? <p className="empty">Nenhum pedido registrado ainda.</p> : pedidos.map(p => <div className="order" key={p.id}><h2>Pedido de {p.cliente.nome}</h2><p>{p.data} • {p.status}</p><p>WhatsApp: {p.cliente.whatsapp}</p>{p.cliente.tipoEntrega === 'entrega' && <p>{p.cliente.endereco}, {p.cliente.bairroNome}</p>}<b>{moeda(p.totalGeral)}</b><ul>{p.carrinho.map(item => <li key={item.id}>{item.tipo}: {item.nome} — {moeda(item.valor)}</li>)}</ul><div className="admin-actions">{['Novo', 'Em produção', 'Saiu para entrega', 'Finalizado'].map(st => <button key={st} onClick={() => mudarStatus(p, st)}>{st}{(st === 'Em produção' || st === 'Saiu para entrega') ? ' + WhatsApp' : ''}</button>)}<button className="danger" onClick={() => setPedidos(old => old.filter(x => x.id !== p.id))}>Excluir</button></div></div>)}</div>; }
