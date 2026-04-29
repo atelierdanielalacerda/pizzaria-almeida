@@ -14,13 +14,13 @@ const ADMIN_SENHA = '816521';
 const TAXA_CARTAO_PERCENTUAL = 0.05;
 
 const imagens = {
-  tradicional: "./tradicional.png",
-  especial: "./especial.png",
-  doce: "./doce.png",
-  miniPizza: "./minipizza.jpg",
+  tradicional: "/tradicional.png",
+  especial: "/especial.png",
+  doce: "/doce.png",
+  miniPizza: "/minipizza.jpg",
 };
 
-const LOGO_URL = "./Logo.png";
+const LOGO_URL = "/Logo.png";
 
 const pizzas = [
   { id: 'a-moda', categoria: 'Pizza Tradicional', nome: 'A moda', descricao: 'Molho, queijo mussarela, presunto, calabresa moída e orégano', precos: { pequena: 25, media: 35, grande: 40, familia: 50 } },
