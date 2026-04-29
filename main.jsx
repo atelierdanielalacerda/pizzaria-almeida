@@ -220,8 +220,23 @@ function App() {
 
   function resumoTexto() {
     const itens = carrinho.map((item, i) => `${i + 1}. ${item.tipo}: ${item.nome} (${item.detalhe}) - ${moeda(item.valor)}`).join('\n');
-    return `*Novo pedido - Pizzaria Almeida*\n\n*Cliente:* ${cliente.nome}\n*WhatsApp:* ${cliente.whatsapp}\n*Tipo:* ${cliente.tipoEntrega === 'entrega' ? 'Entrega' : 'Retirada'}\n${cliente.tipoEntrega === 'entrega' ? `*Endereço:* ${cliente.endereco}\n*Bairro:* ${bairroAtual?.nome || cliente.bairro}\n` : ''}\n*Itens:*\n${itens}\n\nSubtotal: ${moeda(totalItens)}\nFrete: ${moeda(frete)}\nTaxa cartão: ${moeda(taxaCartao)}\n*Total: ${moeda(totalGeral)}*`;
-  }
+   return `*Novo pedido - Pizzaria Almeida*
+          __________________________________
+
+*Cliente:* ${cliente.nome}
+*WhatsApp:* ${cliente.whatsapp}
+*Tipo:* ${cliente.tipoEntrega === 'entrega' ? 'Entrega' : 'Retirada'}
+${cliente.tipoEntrega === 'entrega' ? `*Endereço:* ${cliente.endereco}
+*Bairro:* ${bairroAtual?.nome || cliente.bairro}
+` : ''}
+*Itens:*
+${itens}
+
+*Forma de pagamento:* ${pagamento === 'pix' ? 'Pix' : 'Cartão via link'}
+Subtotal: ${moeda(totalItens)}
+Frete: ${moeda(frete)}
+${pagamento === 'cartao' ? `Taxa cartão: ${moeda(taxaCartao)}
+` : ''}*Total: ${moeda(totalGeral)}*`;
 
   function finalizarPedido() {
     if (!carrinho.length) return avisar('Seu carrinho está vazio.');
