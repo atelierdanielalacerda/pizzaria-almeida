@@ -17,9 +17,10 @@ const imagens = {
   tradicional: "./tradicional.png",
   especial: "./especial.png",
   doce: "./doce.png",
-  miniPizza: "./minipizza.jpg"
-  const LOGO_URL = "./logo.png";
+  miniPizza: "./minipizza.jpg",
 };
+
+const LOGO_URL = "./Logo.png";
 
 const pizzas = [
   { id: 'a-moda', categoria: 'Pizza Tradicional', nome: 'A moda', descricao: 'Molho, queijo mussarela, presunto, calabresa moída e orégano', precos: { pequena: 25, media: 35, grande: 40, familia: 50 } },
