@@ -149,6 +149,9 @@ function App() {
     clearTimeout(window.__toastTimer);
     window.__toastTimer = setTimeout(() => setToast(''), 2500);
   }
+  function irParaTopo() {
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
 
   function togglePizzaSabor(id) {
     const limite = tamanhosPizza[pizzaSize].maxSabores;
@@ -236,7 +239,13 @@ function App() {
 
   return <div className="app">
     <header className="topbar">
-      <div className="brand"><div className="logo">🍕</div><div><h1>Pizzaria Almeida</h1><p>Pizzas • Mini Pizzas • Bebidas</p></div></div>
+     <div className="brand" onClick={irParaTopo} style={{ cursor: "pointer" }}>
+  <div className="logo">🍕</div>
+  <div>
+    <h1>Pizzaria Almeida</h1>
+    <p>Pizzas • Mini Pizzas • Bebidas</p>
+  </div>
+</div>
       <button className="admin-btn" onClick={() => setModoAdmin(true)}>🔒 Admin</button>
     </header>
 
