@@ -14,9 +14,9 @@ const imagens = {
   especial: "/especial.png",
   doce: "/doce.png",
   miniPizza: "/minipizza.jpg",
+  logo: "/Logo.png",
 };
 
-const LOGO_URL = "/public/Logo.png";
 
 const pizzas = [
   { id: 'a-moda', categoria: 'Pizza Tradicional', nome: 'A moda', descricao: 'Molho, queijo mussarela, presunto, calabresa moída e orégano', precos: { pequena: 25, media: 35, grande: 40, familia: 50 } },
