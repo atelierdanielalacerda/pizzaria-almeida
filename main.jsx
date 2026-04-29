@@ -379,88 +379,141 @@ function AdminLogin({ entrar, voltar }) {
 function AdminView({ pedidos, setPedidos, voltar }) {
   const hoje = new Date().toLocaleDateString('pt-BR');
   const mesAtual = hoje.slice(3);
+
   const pedidosHoje = pedidos.filter(p => String(p.data || '').startsWith(hoje));
   const pedidosMes = pedidos.filter(p => String(p.data || '').slice(3, 10) === mesAtual);
+
+  // 💰 FATURAMENTO NÃO PERDE MAIS (mesmo arquivado)
   const fatHoje = pedidosHoje.reduce((s, p) => s + Number(p.totalGeral || 0) - Number(p.taxaCartao || 0), 0);
   const fatMes = pedidosMes.reduce((s, p) => s + Number(p.totalGeral || 0) - Number(p.taxaCartao || 0), 0);
 
   function abrirAviso(pedido, status) {
     const msg = status === 'Em produção'
-      ? `Olá, ${pedido.cliente.nome}! Seu pedido na Pizzaria Almeida já entrou em produção. Em breve avisaremos quando estiver a caminho.`
-      : `Olá, ${pedido.cliente.nome}! Seu pedido da Pizzaria Almeida saiu para entrega e já está indo até você.`;
+      ? `Olá, ${pedido.cliente.nome}! Seu pedido já entrou em produção.`
+      : `Olá, ${pedido.cliente.nome}! Seu pedido saiu para entrega 🚚`;
 
     window.open(
       `https://wa.me/${normalizarWhatsApp(pedido.cliente.whatsapp)}?text=${encodeURIComponent(msg)}`,
-      '_blank',
-      'noopener,noreferrer'
+      '_blank'
     );
   }
 
   function mudarStatus(pedido, status) {
-    setPedidos(old => old.map(p => p.id === pedido.id ? { ...p, status } : p));
-    if (status === 'Em produção' || status === 'Saiu para entrega') abrirAviso(pedido, status);
+    setPedidos(old =>
+      old.map(p => p.id === pedido.id ? { ...p, status } : p)
+    );
+
+    if (status === 'Em produção' || status === 'Saiu para entrega') {
+      abrirAviso(pedido, status);
+    }
   }
+
+  // 🔒 ARQUIVAR (em vez de excluir)
+  function arquivarPedido(pedido) {
+    setPedidos(old =>
+      old.map(p =>
+        p.id === pedido.id ? { ...p, arquivado: true } : p
+      )
+    );
+  }
+
+  // 🔓 RESTAURAR DO ARQUIVO
+  function restaurarPedido(pedido) {
+    setPedidos(old =>
+      old.map(p =>
+        p.id === pedido.id ? { ...p, arquivado: false } : p
+      )
+    );
+  }
+
+  const pedidosAtivos = pedidos.filter(p => !p.arquivado);
+  const pedidosArquivados = pedidos.filter(p => p.arquivado);
 
   return (
     <div className="admin-screen">
+
       <header className="admin-head">
         <div className="admin-brand">
-          <img src={LOGO_URL} alt="Logo Pizzaria Almeida" className="admin-logo" />
+          <img src={LOGO_URL} className="admin-logo" />
           <div>
             <h1>Admin • Pizzaria Almeida</h1>
-            <p>Painel de pedidos e faturamento</p>
+            <p>Painel de pedidos</p>
           </div>
         </div>
 
         <button onClick={voltar}>Voltar</button>
       </header>
 
+      {/* KPIs */}
       <div className="kpis">
         <div><span>Pedidos hoje</span><b>{pedidosHoje.length}</b></div>
-        <div><span>Faturamento líquido hoje</span><b>{moeda(fatHoje)}</b></div>
+        <div><span>Faturamento hoje</span><b>{moeda(fatHoje)}</b></div>
         <div><span>Pedidos mês</span><b>{pedidosMes.length}</b></div>
-        <div><span>Faturamento líquido mês</span><b>{moeda(fatMes)}</b></div>
+        <div><span>Faturamento mês</span><b>{moeda(fatMes)}</b></div>
       </div>
 
-      {!pedidos.length ? (
-        <p className="empty">Nenhum pedido registrado ainda.</p>
-      ) : (
-        pedidos.map(p => (
-          <div className="order" key={p.id}>
-            <div className="order-top">
-              <div>
-                <h2>Pedido de {p.cliente.nome}</h2>
-                <p>{p.data} • {p.status}</p>
-              </div>
-              <strong>{moeda(p.totalGeral)}</strong>
-            </div>
+      {/* 📦 PEDIDOS ATIVOS */}
+      <h2>Pedidos Ativos</h2>
 
-            <div className="order-info">
-              <p><b>WhatsApp:</b> {p.cliente.whatsapp}</p>
-              {p.cliente.tipoEntrega === 'entrega' && (
-                <p><b>Endereço:</b> {p.cliente.endereco}, {p.cliente.bairroNome}</p>
-              )}
-            </div>
+      {!pedidosAtivos.length ? (
+        <p className="empty">Nenhum pedido ativo</p>
+      ) : (
+        pedidosAtivos.map(p => (
+          <div className="order" key={p.id}>
+            <h2>{p.cliente.nome}</h2>
+            <p>{p.data} • {p.status}</p>
+            <b>{moeda(p.totalGeral)}</b>
 
             <ul>
               {p.carrinho.map(item => (
-                <li key={item.id}>{item.tipo}: {item.nome} — {moeda(item.valor)}</li>
+                <li key={item.id}>{item.nome}</li>
               ))}
             </ul>
 
             <div className="admin-actions">
               {['Novo', 'Em produção', 'Saiu para entrega', 'Finalizado'].map(st => (
                 <button key={st} onClick={() => mudarStatus(p, st)}>
-                  {st}{(st === 'Em produção' || st === 'Saiu para entrega') ? ' + WhatsApp' : ''}
+                  {st}
                 </button>
               ))}
-              <button className="danger" onClick={() => setPedidos(old => old.filter(x => x.id !== p.id))}>
-                Excluir
+
+              {/* 🔒 ARQUIVAR */}
+              <button className="danger" onClick={() => arquivarPedido(p)}>
+                Arquivar
               </button>
             </div>
           </div>
         ))
       )}
+
+      {/* 📁 ARQUIVO */}
+      <h2 style={{ marginTop: 30 }}>Arquivo</h2>
+
+      {!pedidosArquivados.length ? (
+        <p className="empty">Nenhum pedido arquivado</p>
+      ) : (
+        pedidosArquivados.map(p => (
+          <div className="order" key={p.id}>
+            <h2>{p.cliente.nome}</h2>
+            <p>{p.data} • {p.status}</p>
+            <b>{moeda(p.totalGeral)}</b>
+
+            <ul>
+              {p.carrinho.map(item => (
+                <li key={item.id}>{item.nome}</li>
+              ))}
+            </ul>
+
+            <div className="admin-actions">
+              {/* 🔓 RESTAURAR */}
+              <button onClick={() => restaurarPedido(p)}>
+                Restaurar
+              </button>
+            </div>
+          </div>
+        ))
+      )}
+
     </div>
   );
 }
