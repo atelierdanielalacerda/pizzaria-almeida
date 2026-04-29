@@ -14,9 +14,9 @@ const imagens = {
   especial: "/especial.png",
   doce: "/doce.png",
   miniPizza: "/minipizza.jpg",
-  logo: "/Logo.png",
+  
 };
-
+const LOGO_URL = "/Logo.png";
 
 const pizzas = [
   { id: 'a-moda', categoria: 'Pizza Tradicional', nome: 'A moda', descricao: 'Molho, queijo mussarela, presunto, calabresa moída e orégano', precos: { pequena: 25, media: 35, grande: 40, familia: 50 } },
@@ -255,7 +255,7 @@ ${pagamento === 'cartao' ? `Taxa cartão: ${moeda(taxaCartao)}
   return <div className="app">
     <header className="topbar">
      <div className="brand" onClick={irParaTopo} style={{ cursor: "pointer" }}>
-  <div className="logo">🍕</div>
+ <img src={LOGO_URL} alt="Logo Pizzaria Almeida" className="logo-img" />
   <div>
     <h1>Pizzaria Almeida</h1>
     <p>Pizzas • Mini Pizzas • Bebidas</p>
