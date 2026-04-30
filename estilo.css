@@ -656,3 +656,120 @@ button{cursor:pointer;border:0}
     gap:12px
   }
 }
+
+/* ================= CARRINHO CONTAINER ================= */
+.cart{
+  position:sticky;
+  top:90px;
+  height:max-content;
+  background:#fff;
+  border:1px solid #f1d28a;
+  border-radius:32px;
+  padding:20px;
+  box-shadow:0 8px 28px #0002;
+}
+
+.cart h2{color:#7a2e1d}
+
+/* ================= LOGIN ADMIN ================= */
+.login-card{
+  background:#fff;
+  border:1px solid #f1d28a;
+  border-radius:28px;
+  padding:30px;
+  max-width:480px;
+  margin:60px auto;
+  box-shadow:0 10px 30px #00000015;
+  text-align:center;
+}
+
+.login-card h1{
+  margin:0 0 20px;
+  color:#7a2e1d;
+}
+
+.error{
+  color:#b42318;
+  margin-top:10px;
+  font-weight:700;
+}
+
+/* ================= CAMPOS DE PAGAMENTO ================= */
+.notice label{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  margin-top:10px;
+  color:#7a2e1d;
+  font-weight:800;
+}
+
+.notice input{
+  padding:12px 14px;
+  border-radius:14px;
+  border:1px solid #f1d28a;
+  background:#fff;
+  font-size:14px;
+  outline:none;
+  box-shadow:0 3px 10px #00000010;
+}
+
+.notice input:focus{
+  border-color:#b42318;
+  box-shadow:0 0 0 2px #ffd6d1;
+}
+
+/* ================= ADMIN EXTRA ================= */
+.admin-section-title{
+  color:#7a2e1d;
+  margin:26px 0 12px;
+}
+
+.admin-filters{
+  margin:18px 0;
+}
+
+.archive-toggle{
+  margin:20px 0;
+  text-align:center;
+}
+
+.order-top{
+  display:flex;
+  justify-content:space-between;
+  gap:14px;
+  align-items:flex-start;
+}
+
+.order-top strong{
+  color:#b42318;
+  font-size:24px;
+}
+
+.order-info{
+  background:#fff3d6;
+  border-radius:16px;
+  padding:12px;
+  margin:12px 0;
+}
+
+.order-info p{
+  margin:6px 0;
+}
+
+.empty{
+  background:#fff;
+  border:1px solid #f1d28a;
+  border-radius:24px;
+  padding:22px;
+  font-weight:800;
+  box-shadow:0 6px 22px #00000010;
+}
+
+@media(max-width:900px){
+  .cart{position:static}
+  .form-grid{grid-template-columns:1fr}
+  .drink-row{align-items:stretch}
+  .drink-row select,.drink-row .yellow,.qty{width:100%}
+  .order-top{flex-direction:column}
+}
