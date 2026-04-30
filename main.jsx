@@ -153,6 +153,9 @@ function App() {
   function irParaTopo() {
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
+  function irParaCarrinho() {
+  document.getElementById("carrinho")?.scrollIntoView({ behavior: "smooth" });
+}
 
   function togglePizzaSabor(id) {
     const limite = tamanhosPizza[pizzaSize].maxSabores;
@@ -265,7 +268,16 @@ ${pagamento === 'cartao' ? `Taxa cartão: ${moeda(taxaCartao)}
     <p>Pizzas • Mini Pizzas • Bebidas</p>
   </div>
 </div>
-      <button className="admin-btn" onClick={() => setModoAdmin(true)}>🔒 Admin</button>
+      <div className="top-actions">
+  <button className="cart-top-btn" onClick={irParaCarrinho}>
+    🛒 Carrinho
+    {carrinho.length > 0 && <b>{carrinho.length}</b>}
+  </button>
+
+  <button className="admin-btn" onClick={() => setModoAdmin(true)}>
+    🔒 Admin
+  </button>
+</div>
     </header>
 
     <main className="layout">
@@ -337,7 +349,7 @@ function Card({ title, children }) { return <section className="card"><h2>{title
 function Input({ label, value, onChange }) { return <label><span>{label}</span><input value={value} onChange={(e) => onChange(e.target.value)} /></label>; }
 function ProductCard({ item, selected, onClick, extra }) { return <button onClick={onClick} className={`product ${selected ? 'selected' : ''}`}><img src={item.imagem} alt={item.nome} /><div><span className="badge">{extra}</span><h3>{item.nome}</h3><p>{item.descricao}</p></div></button>; }
 function MiniPizzaMenu(props) { return <div className="mini-menu"><div className="size-grid">{Object.keys(kitsMiniPizza).map(qtd => <button key={qtd} className={Number(qtd) === props.miniQtd ? 'selected' : ''} onClick={() => { props.setMiniQtd(Number(qtd)); props.setMiniSabores([]); }}>{qtd}<small>{moeda(kitsMiniPizza[qtd].valor)}</small></button>)}</div><p>Esse kit permite até {kitsMiniPizza[props.miniQtd].maxSabores} sabor(es).</p><div className="products">{miniPizzas.map(e => <ProductCard key={e.id} item={{ ...e, imagem: imagens.miniPizza }} selected={props.miniSabores.includes(e.id)} onClick={() => props.toggleMiniSabor(e.id)} extra="Mini Pizza" />)}</div><button className="primary" onClick={props.addMiniPizza}>Adicionar Mini Pizza</button></div>; }
-function Cart({ carrinho, removerItem, totalItens, frete, taxaCartao, totalGeral, pagamento }) { return <aside className="cart"><h2>🛒 Carrinho</h2>{!carrinho.length ? <p>Nenhum item adicionado ainda.</p> : <>{carrinho.map(item => <div className="cart-item" key={item.id}><div><b>{item.nome}</b><small>{item.detalhe}</small><strong>{moeda(item.valor)}</strong></div><button onClick={() => removerItem(item.id)}>🗑️</button></div>)}<div className="totals"><p>Subtotal: {moeda(totalItens)}</p><p>Frete: {moeda(frete)}</p>{pagamento === 'cartao' && <p>Taxa cartão: {moeda(taxaCartao)}</p>}<h3>Total: {moeda(totalGeral)}</h3></div></>}</aside>; }
+function Cart({ carrinho, removerItem, totalItens, frete, taxaCartao, totalGeral, pagamento }) { return <aside id="carrinho" className="cart"><h2>🛒 Carrinho</h2>{!carrinho.length ? <p>Nenhum item adicionado ainda.</p> : <>{carrinho.map(item => <div className="cart-item" key={item.id}><div><b>{item.nome}</b><small>{item.detalhe}</small><strong>{moeda(item.valor)}</strong></div><button onClick={() => removerItem(item.id)}>🗑️</button></div>)}<div className="totals"><p>Subtotal: {moeda(totalItens)}</p><p>Frete: {moeda(frete)}</p>{pagamento === 'cartao' && <p>Taxa cartão: {moeda(taxaCartao)}</p>}<h3>Total: {moeda(totalGeral)}</h3></div></>}</aside>; }
 function Resumo({ carrinho, cliente, bairroAtual, frete, taxaCartao, totalItens, totalGeral, pagamento }) { return <div className="summary"><h3>Resumo do pedido</h3>{carrinho.map(item => <p key={item.id}>• {item.nome} — {moeda(item.valor)}</p>)}<div className="notice"><p>Cliente: {cliente.nome}</p><p>WhatsApp: {cliente.whatsapp}</p><p>Tipo: {cliente.tipoEntrega === 'entrega' ? 'Entrega' : 'Retirada'}</p>{cliente.tipoEntrega === 'entrega' && <p>Endereço: {cliente.endereco}, {bairroAtual?.nome}</p>}{cliente.dataMiniPizza && <p>Data das Mini Pizzas: {cliente.dataMiniPizza}</p>}<p>Pagamento: {pagamento === 'pix' ? 'Pix' : pagamento === 'cartao' ? 'Cartão via link' : 'Dinheiro na entrega'}</p>{pagamento === 'dinheiro' && cliente.trocoDinheiro && <p>Troco para: R$ {cliente.trocoDinheiro}</p>}</div><h3>Total: {moeda(totalGeral)}</h3><p>Subtotal: {moeda(totalItens)} • Frete: {moeda(frete)}{pagamento === 'cartao' ? ` • Taxa: ${moeda(taxaCartao)}` : ''}</p></div>; }
 function PixBox({ avisar }) {
   const [copiado, setCopiado] = useState(false);
