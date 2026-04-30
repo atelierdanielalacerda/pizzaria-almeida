@@ -307,8 +307,22 @@ ${pagamento === 'cartao' ? `Taxa cartão: ${moeda(taxaCartao)}
         {etapa === 3 && <Card title="Resumo e pagamento">
           <Resumo carrinho={carrinho} cliente={cliente} bairroAtual={bairroAtual} frete={frete} taxaCartao={taxaCartao} totalItens={totalItens} totalGeral={totalGeral} pagamento={pagamento} />
           <div className="option-grid"><button className={pagamento === 'pix' ? 'selected' : ''} onClick={() => setPagamento('pix')}>Pix</button><button className={pagamento === 'cartao' ? 'selected' : ''} onClick={() => setPagamento('cartao')}>Cartão via link</button><button className={pagamento === 'dinheiro' ? 'selected' : ''} onClick={() => setPagamento('dinheiro')}>Dinheiro na entrega</button></div>
-          {pagamento === 'pix' && <PixBox avisar={avisar} />}
-          {pagamento === 'cartao' && <p className="notice">Finalize o pedido e solicite o link de pagamento pelo WhatsApp. A taxa do cartão será somada automaticamente.</p>}
+        {pagamento === 'pix' && (
+  <>
+    <PixBox avisar={avisar} />
+    <p className="notice">
+      Copie a chave Pix, finalize o pedido e envie o comprovante de pagamento pelo WhatsApp.<br />
+      Assim que o pagamento for confirmado, iniciaremos a produção do seu pedido.
+    </p>
+  </>
+)}
+
+{pagamento === 'cartao' && (
+  <p className="notice">
+    Finalize o pedido e solicite o link de pagamento pelo WhatsApp.<br />
+    Após a aprovação do pagamento, iniciaremos a produção do seu pedido.
+  </p>
+)}
           {pagamento === 'dinheiro' && <div className="notice"><p>Pagamento em dinheiro será realizado na entrega.</p><label><span>Precisa de troco? Informe para quanto</span><input type="text" placeholder="Ex: 100,00" value={cliente.trocoDinheiro} onChange={(e) => setCliente({ ...cliente, trocoDinheiro: e.target.value })} /></label></div>}
           <button className="whats" onClick={finalizarPedido}>💬 Finalizar pedido no WhatsApp</button>{whatsUrl && <a className="brown full center" href={whatsUrl} target="_blank" rel="noreferrer">Abrir WhatsApp novamente</a>}
         </Card>}
