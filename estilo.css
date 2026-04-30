@@ -335,11 +335,13 @@ button{cursor:pointer;border:0}
   border:1px solid #f1d28a;
 }
 
-.notice{
-  background:#fff3d6;
-  padding:10px;
-  border-radius:14px;
-  margin:10px 0;
+.notice {
+  background: #fff3d6;
+  padding: 12px;
+  border-radius: 14px;
+  margin: 12px 0;
+  font-size: 14px;
+  line-height: 1.4;
 }
 /* ================= BOTÕES FULL ================= */
 
