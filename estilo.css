@@ -720,6 +720,50 @@ button{cursor:pointer;border:0}
   border-color:#b42318;
   box-shadow:0 0 0 2px #ffd6d1;
 }
+.top-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cart-top-btn {
+  display: none;
+  background: #b42318;
+  color: #fff;
+  border-radius: 20px;
+  padding: 12px 18px;
+  font-weight: 900;
+  position: relative;
+}
+
+.cart-top-btn b {
+  background: #ffd34d;
+  color: #7a2e1d;
+  border-radius: 999px;
+  padding: 2px 7px;
+  margin-left: 6px;
+}
+
+@media(max-width:900px) {
+  .cart-top-btn {
+    display: block;
+  }
+
+  .admin-btn {
+    position: fixed;
+    right: 16px;
+    bottom: 18px;
+    z-index: 999;
+    border-radius: 999px;
+    padding: 12px 14px;
+    font-size: 14px;
+    box-shadow: 0 8px 24px #00000040;
+  }
+
+  .cart {
+    margin-top: 18px;
+  }
+}
 
 /* ================= ADMIN EXTRA ================= */
 .admin-section-title{
