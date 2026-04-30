@@ -783,7 +783,6 @@ button{cursor:pointer;border:0}
   box-shadow:0 6px 22px #00000010;
 }
 @media(max-width:900px){
-
   .topbar{
     position:sticky;
     top:0;
@@ -796,30 +795,27 @@ button{cursor:pointer;border:0}
     padding:10px;
   }
 
+  .content{
+    order:1;
+    margin-top:0;
+  }
+
   .cart{
-    order:-1;
-    position:sticky;
-    top:92px;
-    z-index:90;
+    order:2;
+    position:static;
     background:#fff;
     border:1px solid #f1d28a;
     border-radius:20px;
     padding:14px;
     box-shadow:0 10px 25px #00000020;
-    margin-bottom:10px;
-    max-height:28vh;
-    overflow:auto;
+    margin-top:18px;
+    max-height:none;
+    overflow:visible;
   }
 
   .steps{
-    position:sticky;
-    top:330px;
-    z-index:80;
+    position:static;
     margin-bottom:14px;
-  }
-
-  .content{
-    margin-top:0;
   }
 
   .products{
