@@ -134,7 +134,7 @@ function App() {
   const [bebidaSelecionada, setBebidaSelecionada] = useState('coca-1l');
   const [bebidaQtd, setBebidaQtd] = useState(1);
 
-  const [cliente, setCliente] = useState({ nome: '', whatsapp: '', endereco: '', bairro: '', tipoEntrega: 'entrega' });
+  const [cliente, setCliente] = useState({ nome: '', whatsapp: '', endereco: '', bairro: '', tipoEntrega: 'entrega', dataMiniPizza: '', trocoDinheiro: '' });
   const [pagamento, setPagamento] = useState('pix');
 
   const totalItens = useMemo(() => carrinho.reduce((soma, item) => soma + item.valor, 0), [carrinho]);
@@ -143,6 +143,7 @@ function App() {
   const taxaCartao = pagamento === 'cartao' ? (totalItens + frete) * TAXA_CARTAO_PERCENTUAL : 0;
   const totalGeral = totalItens + frete + taxaCartao;
   const pizzasFiltradas = filtroPizza === 'Todos' ? pizzas : pizzas.filter((p) => p.categoria === filtroPizza);
+  const temMiniPizza = carrinho.some((item) => item.tipo === 'Mini Pizza');
 
   function avisar(msg) {
     setToast(msg);
@@ -211,7 +212,7 @@ function App() {
   }
 
   function validarCliente() {
-    if (!cliente.nome || !cliente.whatsapp || (cliente.tipoEntrega === 'entrega' && (!cliente.endereco || !cliente.bairro))) {
+    if (!cliente.nome || !cliente.whatsapp || (cliente.tipoEntrega === 'entrega' && (!cliente.endereco || !cliente.bairro)) || (temMiniPizza && !cliente.dataMiniPizza)) {
       avisar('Preencha os dados necessários.');
       return false;
     }
@@ -232,8 +233,10 @@ ${cliente.tipoEntrega === 'entrega' ? `*Endereço:* ${cliente.endereco}
 *Itens:*
 ${itens}
 
-*Forma de pagamento:* ${pagamento === 'pix' ? 'Pix' : 'Cartão via link'}
-Subtotal: ${moeda(totalItens)}
+*Forma de pagamento:* ${pagamento === 'pix' ? 'Pix' : pagamento === 'cartao' ? 'Cartão via link' : 'Dinheiro na entrega'}
+${pagamento === 'dinheiro' && cliente.trocoDinheiro ? `*Troco para:* R$ ${cliente.trocoDinheiro}
+` : ''}${temMiniPizza ? `*Data das Mini Pizzas:* ${cliente.dataMiniPizza}
+` : ''}Subtotal: ${moeda(totalItens)}
 Frete: ${moeda(frete)}
 ${pagamento === 'cartao' ? `Taxa cartão: ${moeda(taxaCartao)}
 ` : ''}*Total: ${moeda(totalGeral)}*`;
@@ -297,17 +300,20 @@ ${pagamento === 'cartao' ? `Taxa cartão: ${moeda(taxaCartao)}
           <div className="form-grid"><Input label="Nome" value={cliente.nome} onChange={(v) => setCliente({ ...cliente, nome: v })} /><Input label="WhatsApp" value={cliente.whatsapp} onChange={(v) => setCliente({ ...cliente, whatsapp: v })} /></div>
           <div className="option-grid"><button className={cliente.tipoEntrega === 'entrega' ? 'selected' : ''} onClick={() => setCliente({ ...cliente, tipoEntrega: 'entrega' })}>Entrega</button><button className={cliente.tipoEntrega === 'retirada' ? 'selected' : ''} onClick={() => setCliente({ ...cliente, tipoEntrega: 'retirada' })}>Retirada</button></div>
           {cliente.tipoEntrega === 'entrega' && <div className="form-grid"><Input label="Endereço" value={cliente.endereco} onChange={(v) => setCliente({ ...cliente, endereco: v })} /><label><span>Bairro</span><select value={cliente.bairro} onChange={(e) => setCliente({ ...cliente, bairro: e.target.value })}><option value="">Selecione seu bairro</option>{bairros.map(b => <option key={b.id} value={b.id}>{b.nome} - frete {moeda(b.frete)}</option>)}</select></label></div>}
+          {temMiniPizza && <div className="form-grid"><label><span>Data para entrega das Mini Pizzas</span><input type="date" value={cliente.dataMiniPizza} onChange={(e) => setCliente({ ...cliente, dataMiniPizza: e.target.value })} /></label></div>}
           <button className="next" onClick={() => validarCliente() && setEtapa(3)}>Avançar</button>
         </Card>}
 
         {etapa === 3 && <Card title="Resumo e pagamento">
-          <Resumo carrinho={carrinho} cliente={cliente} bairroAtual={bairroAtual} frete={frete} taxaCartao={taxaCartao} totalItens={totalItens} totalGeral={totalGeral} />
-          <div className="option-grid"><button className={pagamento === 'pix' ? 'selected' : ''} onClick={() => setPagamento('pix')}>Pix</button><button className={pagamento === 'cartao' ? 'selected' : ''} onClick={() => setPagamento('cartao')}>Cartão via link</button></div>
-          {pagamento === 'pix' ? <PixBox avisar={avisar} /> : <p className="notice">Finalize o pedido e solicite o link de pagamento pelo WhatsApp. A taxa do cartão será somada automaticamente.</p>}
+          <Resumo carrinho={carrinho} cliente={cliente} bairroAtual={bairroAtual} frete={frete} taxaCartao={taxaCartao} totalItens={totalItens} totalGeral={totalGeral} pagamento={pagamento} />
+          <div className="option-grid"><button className={pagamento === 'pix' ? 'selected' : ''} onClick={() => setPagamento('pix')}>Pix</button><button className={pagamento === 'cartao' ? 'selected' : ''} onClick={() => setPagamento('cartao')}>Cartão via link</button><button className={pagamento === 'dinheiro' ? 'selected' : ''} onClick={() => setPagamento('dinheiro')}>Dinheiro na entrega</button></div>
+          {pagamento === 'pix' && <PixBox avisar={avisar} />}
+          {pagamento === 'cartao' && <p className="notice">Finalize o pedido e solicite o link de pagamento pelo WhatsApp. A taxa do cartão será somada automaticamente.</p>}
+          {pagamento === 'dinheiro' && <div className="notice"><p>Pagamento em dinheiro será realizado na entrega.</p><label><span>Precisa de troco? Informe para quanto</span><input type="text" placeholder="Ex: 100,00" value={cliente.trocoDinheiro} onChange={(e) => setCliente({ ...cliente, trocoDinheiro: e.target.value })} /></label></div>}
           <button className="whats" onClick={finalizarPedido}>💬 Finalizar pedido no WhatsApp</button>{whatsUrl && <a className="brown full center" href={whatsUrl} target="_blank" rel="noreferrer">Abrir WhatsApp novamente</a>}
         </Card>}
       </section>
-      <Cart carrinho={carrinho} removerItem={(id) => setCarrinho(old => old.filter(item => item.id !== id))} totalItens={totalItens} frete={frete} taxaCartao={taxaCartao} totalGeral={totalGeral} />
+      <Cart carrinho={carrinho} removerItem={(id) => setCarrinho(old => old.filter(item => item.id !== id))} totalItens={totalItens} frete={frete} taxaCartao={taxaCartao} totalGeral={totalGeral} pagamento={pagamento} />
     </main>
     {toast && <div className="toast">{toast}</div>}
   </div>;
@@ -317,8 +323,8 @@ function Card({ title, children }) { return <section className="card"><h2>{title
 function Input({ label, value, onChange }) { return <label><span>{label}</span><input value={value} onChange={(e) => onChange(e.target.value)} /></label>; }
 function ProductCard({ item, selected, onClick, extra }) { return <button onClick={onClick} className={`product ${selected ? 'selected' : ''}`}><img src={item.imagem} alt={item.nome} /><div><span className="badge">{extra}</span><h3>{item.nome}</h3><p>{item.descricao}</p></div></button>; }
 function MiniPizzaMenu(props) { return <div className="mini-menu"><div className="size-grid">{Object.keys(kitsMiniPizza).map(qtd => <button key={qtd} className={Number(qtd) === props.miniQtd ? 'selected' : ''} onClick={() => { props.setMiniQtd(Number(qtd)); props.setMiniSabores([]); }}>{qtd}<small>{moeda(kitsMiniPizza[qtd].valor)}</small></button>)}</div><p>Esse kit permite até {kitsMiniPizza[props.miniQtd].maxSabores} sabor(es).</p><div className="products">{miniPizzas.map(e => <ProductCard key={e.id} item={{ ...e, imagem: imagens.miniPizza }} selected={props.miniSabores.includes(e.id)} onClick={() => props.toggleMiniSabor(e.id)} extra="Mini Pizza" />)}</div><button className="primary" onClick={props.addMiniPizza}>Adicionar Mini Pizza</button></div>; }
-function Cart({ carrinho, removerItem, totalItens, frete, taxaCartao, totalGeral }) { return <aside className="cart"><h2>🛒 Carrinho</h2>{!carrinho.length ? <p>Nenhum item adicionado ainda.</p> : <>{carrinho.map(item => <div className="cart-item" key={item.id}><div><b>{item.nome}</b><small>{item.detalhe}</small><strong>{moeda(item.valor)}</strong></div><button onClick={() => removerItem(item.id)}>🗑️</button></div>)}<div className="totals"><p>Subtotal: {moeda(totalItens)}</p><p>Frete: {moeda(frete)}</p><p>Taxa cartão: {moeda(taxaCartao)}</p><h3>Total: {moeda(totalGeral)}</h3></div></>}</aside>; }
-function Resumo({ carrinho, cliente, bairroAtual, frete, taxaCartao, totalItens, totalGeral }) { return <div className="summary"><h3>Resumo do pedido</h3>{carrinho.map(item => <p key={item.id}>• {item.nome} — {moeda(item.valor)}</p>)}<div className="notice"><p>Cliente: {cliente.nome}</p><p>WhatsApp: {cliente.whatsapp}</p><p>Tipo: {cliente.tipoEntrega === 'entrega' ? 'Entrega' : 'Retirada'}</p>{cliente.tipoEntrega === 'entrega' && <p>Endereço: {cliente.endereco}, {bairroAtual?.nome}</p>}</div><h3>Total: {moeda(totalGeral)}</h3><p>Subtotal: {moeda(totalItens)} • Frete: {moeda(frete)} • Taxa: {moeda(taxaCartao)}</p></div>; }
+function Cart({ carrinho, removerItem, totalItens, frete, taxaCartao, totalGeral, pagamento }) { return <aside className="cart"><h2>🛒 Carrinho</h2>{!carrinho.length ? <p>Nenhum item adicionado ainda.</p> : <>{carrinho.map(item => <div className="cart-item" key={item.id}><div><b>{item.nome}</b><small>{item.detalhe}</small><strong>{moeda(item.valor)}</strong></div><button onClick={() => removerItem(item.id)}>🗑️</button></div>)}<div className="totals"><p>Subtotal: {moeda(totalItens)}</p><p>Frete: {moeda(frete)}</p>{pagamento === 'cartao' && <p>Taxa cartão: {moeda(taxaCartao)}</p>}<h3>Total: {moeda(totalGeral)}</h3></div></>}</aside>; }
+function Resumo({ carrinho, cliente, bairroAtual, frete, taxaCartao, totalItens, totalGeral, pagamento }) { return <div className="summary"><h3>Resumo do pedido</h3>{carrinho.map(item => <p key={item.id}>• {item.nome} — {moeda(item.valor)}</p>)}<div className="notice"><p>Cliente: {cliente.nome}</p><p>WhatsApp: {cliente.whatsapp}</p><p>Tipo: {cliente.tipoEntrega === 'entrega' ? 'Entrega' : 'Retirada'}</p>{cliente.tipoEntrega === 'entrega' && <p>Endereço: {cliente.endereco}, {bairroAtual?.nome}</p>}{cliente.dataMiniPizza && <p>Data das Mini Pizzas: {cliente.dataMiniPizza}</p>}<p>Pagamento: {pagamento === 'pix' ? 'Pix' : pagamento === 'cartao' ? 'Cartão via link' : 'Dinheiro na entrega'}</p>{pagamento === 'dinheiro' && cliente.trocoDinheiro && <p>Troco para: R$ {cliente.trocoDinheiro}</p>}</div><h3>Total: {moeda(totalGeral)}</h3><p>Subtotal: {moeda(totalItens)} • Frete: {moeda(frete)}{pagamento === 'cartao' ? ` • Taxa: ${moeda(taxaCartao)}` : ''}</p></div>; }
 function PixBox({ avisar }) {
   const [copiado, setCopiado] = useState(false);
   async function copiar() {
@@ -377,143 +383,137 @@ function AdminLogin({ entrar, voltar }) {
   );
 }
 function AdminView({ pedidos, setPedidos, voltar }) {
+  const [mostrarArquivo, setMostrarArquivo] = useState(false);
+  const [filtroStatus, setFiltroStatus] = useState('Todos');
+
   const hoje = new Date().toLocaleDateString('pt-BR');
   const mesAtual = hoje.slice(3);
+  const pedidosValidosFinanceiro = pedidos.filter(p => p.status !== 'Cancelado');
 
   const pedidosHoje = pedidos.filter(p => String(p.data || '').startsWith(hoje));
   const pedidosMes = pedidos.filter(p => String(p.data || '').slice(3, 10) === mesAtual);
+  const pedidosHojeFinanceiro = pedidosValidosFinanceiro.filter(p => String(p.data || '').startsWith(hoje));
+  const pedidosMesFinanceiro = pedidosValidosFinanceiro.filter(p => String(p.data || '').slice(3, 10) === mesAtual);
 
-  // 💰 FATURAMENTO NÃO PERDE MAIS (mesmo arquivado)
-  const fatHoje = pedidosHoje.reduce((s, p) => s + Number(p.totalGeral || 0) - Number(p.taxaCartao || 0), 0);
-  const fatMes = pedidosMes.reduce((s, p) => s + Number(p.totalGeral || 0) - Number(p.taxaCartao || 0), 0);
+  const fatHoje = pedidosHojeFinanceiro.reduce((s, p) => s + Number(p.totalGeral || 0) - Number(p.taxaCartao || 0), 0);
+  const fatMes = pedidosMesFinanceiro.reduce((s, p) => s + Number(p.totalGeral || 0) - Number(p.taxaCartao || 0), 0);
 
   function abrirAviso(pedido, status) {
     const msg = status === 'Em produção'
-      ? `Olá, ${pedido.cliente.nome}! Seu pedido já entrou em produção.`
-      : `Olá, ${pedido.cliente.nome}! Seu pedido saiu para entrega 🚚`;
+      ? `Olá, ${pedido.cliente.nome}! Seu pedido na Pizzaria Almeida já entrou em produção. Em breve avisaremos quando estiver a caminho.`
+      : `Olá, ${pedido.cliente.nome}! Seu pedido da Pizzaria Almeida saiu para entrega e já está indo até você.`;
 
     window.open(
       `https://wa.me/${normalizarWhatsApp(pedido.cliente.whatsapp)}?text=${encodeURIComponent(msg)}`,
-      '_blank'
+      '_blank',
+      'noopener,noreferrer'
     );
   }
 
   function mudarStatus(pedido, status) {
-    setPedidos(old =>
-      old.map(p => p.id === pedido.id ? { ...p, status } : p)
-    );
-
-    if (status === 'Em produção' || status === 'Saiu para entrega') {
-      abrirAviso(pedido, status);
-    }
+    setPedidos(old => old.map(p => p.id === pedido.id ? { ...p, status } : p));
+    if (status === 'Em produção' || status === 'Saiu para entrega') abrirAviso(pedido, status);
   }
 
-  // 🔒 ARQUIVAR (em vez de excluir)
   function arquivarPedido(pedido) {
-    setPedidos(old =>
-      old.map(p =>
-        p.id === pedido.id ? { ...p, arquivado: true } : p
-      )
-    );
+    setPedidos(old => old.map(p => p.id === pedido.id ? { ...p, arquivado: true } : p));
   }
 
-  // 🔓 RESTAURAR DO ARQUIVO
   function restaurarPedido(pedido) {
-    setPedidos(old =>
-      old.map(p =>
-        p.id === pedido.id ? { ...p, arquivado: false } : p
-      )
-    );
+    setPedidos(old => old.map(p => p.id === pedido.id ? { ...p, arquivado: false } : p));
+  }
+
+  function excluirPedido(pedido) {
+    if (window.confirm('Deseja excluir este pedido definitivamente? Use apenas para remover testes.')) {
+      setPedidos(old => old.filter(p => p.id !== pedido.id));
+    }
   }
 
   const pedidosAtivos = pedidos.filter(p => !p.arquivado);
   const pedidosArquivados = pedidos.filter(p => p.arquivado);
+  const pedidosFiltrados = filtroStatus === 'Todos' ? pedidosAtivos : pedidosAtivos.filter(p => p.status === filtroStatus);
+
+  function renderPedido(p, arquivado = false) {
+    return (
+      <div className="order" key={p.id}>
+        <div className="order-top">
+          <div>
+            <h2>Pedido de {p.cliente.nome}</h2>
+            <p>{p.data} • {p.status}</p>
+          </div>
+          <strong>{moeda(p.totalGeral)}</strong>
+        </div>
+
+        <div className="order-info">
+          <p><b>WhatsApp:</b> {p.cliente.whatsapp}</p>
+          {p.cliente.tipoEntrega === 'entrega' && (
+            <p><b>Endereço:</b> {p.cliente.endereco}, {p.cliente.bairroNome}</p>
+          )}
+          {p.cliente.dataMiniPizza && <p><b>Data Mini Pizzas:</b> {p.cliente.dataMiniPizza}</p>}
+          <p><b>Pagamento:</b> {p.pagamento === 'pix' ? 'Pix' : p.pagamento === 'cartao' ? 'Cartão via link' : 'Dinheiro na entrega'}</p>
+          {p.pagamento === 'dinheiro' && p.cliente.trocoDinheiro && <p><b>Troco para:</b> R$ {p.cliente.trocoDinheiro}</p>}
+        </div>
+
+        <ul>
+          {p.carrinho.map(item => (
+            <li key={item.id}>{item.nome} — {moeda(item.valor)}</li>
+          ))}
+        </ul>
+
+        <div className="admin-actions">
+          {!arquivado && ['Novo', 'Em produção', 'Saiu para entrega', 'Finalizado'].map(st => (
+            <button key={st} onClick={() => mudarStatus(p, st)}>
+              {st}{(st === 'Em produção' || st === 'Saiu para entrega') ? ' + WhatsApp' : ''}
+            </button>
+          ))}
+          {!arquivado && <button onClick={() => mudarStatus(p, 'Cancelado')}>Pedido cancelado</button>}
+          {!arquivado && <button onClick={() => arquivarPedido(p)}>Arquivar</button>}
+          {arquivado && <button onClick={() => restaurarPedido(p)}>Restaurar</button>}
+          <button className="danger" onClick={() => excluirPedido(p)}>Excluir</button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="admin-screen">
-
       <header className="admin-head">
         <div className="admin-brand">
-          <img src={LOGO_URL} className="admin-logo" />
+          <img src={LOGO_URL} alt="Logo Pizzaria Almeida" className="admin-logo" />
           <div>
             <h1>Admin • Pizzaria Almeida</h1>
-            <p>Painel de pedidos</p>
+            <p>Painel de pedidos e faturamento</p>
           </div>
         </div>
-
         <button onClick={voltar}>Voltar</button>
       </header>
 
-      {/* KPIs */}
       <div className="kpis">
         <div><span>Pedidos hoje</span><b>{pedidosHoje.length}</b></div>
-        <div><span>Faturamento hoje</span><b>{moeda(fatHoje)}</b></div>
+        <div><span>Faturamento líquido hoje</span><b>{moeda(fatHoje)}</b></div>
         <div><span>Pedidos mês</span><b>{pedidosMes.length}</b></div>
-        <div><span>Faturamento mês</span><b>{moeda(fatMes)}</b></div>
+        <div><span>Faturamento líquido mês</span><b>{moeda(fatMes)}</b></div>
       </div>
 
-      {/* 📦 PEDIDOS ATIVOS */}
-      <h2>Pedidos Ativos</h2>
+      <div className="filters admin-filters">
+        {['Todos', 'Novo', 'Em produção', 'Saiu para entrega', 'Finalizado', 'Cancelado'].map(st => (
+          <button key={st} className={filtroStatus === st ? 'active' : ''} onClick={() => setFiltroStatus(st)}>{st}</button>
+        ))}
+      </div>
 
-      {!pedidosAtivos.length ? (
-        <p className="empty">Nenhum pedido ativo</p>
-      ) : (
-        pedidosAtivos.map(p => (
-          <div className="order" key={p.id}>
-            <h2>{p.cliente.nome}</h2>
-            <p>{p.data} • {p.status}</p>
-            <b>{moeda(p.totalGeral)}</b>
+      <h2 className="admin-section-title">Pedidos Ativos</h2>
+      {!pedidosFiltrados.length ? <p className="empty">Nenhum pedido ativo</p> : pedidosFiltrados.map(p => renderPedido(p))}
 
-            <ul>
-              {p.carrinho.map(item => (
-                <li key={item.id}>{item.nome}</li>
-              ))}
-            </ul>
+      <button className="brown full archive-toggle" onClick={() => setMostrarArquivo(!mostrarArquivo)}>
+        {mostrarArquivo ? 'Ocultar Arquivo' : `Mostrar Arquivo (${pedidosArquivados.length})`}
+      </button>
 
-            <div className="admin-actions">
-              {['Novo', 'Em produção', 'Saiu para entrega', 'Finalizado'].map(st => (
-                <button key={st} onClick={() => mudarStatus(p, st)}>
-                  {st}
-                </button>
-              ))}
-
-              {/* 🔒 ARQUIVAR */}
-              <button className="danger" onClick={() => arquivarPedido(p)}>
-                Arquivar
-              </button>
-            </div>
-          </div>
-        ))
+      {mostrarArquivo && (
+        <>
+          <h2 className="admin-section-title">Arquivo</h2>
+          {!pedidosArquivados.length ? <p className="empty">Nenhum pedido arquivado</p> : pedidosArquivados.map(p => renderPedido(p, true))}
+        </>
       )}
-
-      {/* 📁 ARQUIVO */}
-      <h2 style={{ marginTop: 30 }}>Arquivo</h2>
-
-      {!pedidosArquivados.length ? (
-        <p className="empty">Nenhum pedido arquivado</p>
-      ) : (
-        pedidosArquivados.map(p => (
-          <div className="order" key={p.id}>
-            <h2>{p.cliente.nome}</h2>
-            <p>{p.data} • {p.status}</p>
-            <b>{moeda(p.totalGeral)}</b>
-
-            <ul>
-              {p.carrinho.map(item => (
-                <li key={item.id}>{item.nome}</li>
-              ))}
-            </ul>
-
-            <div className="admin-actions">
-              {/* 🔓 RESTAURAR */}
-              <button onClick={() => restaurarPedido(p)}>
-                Restaurar
-              </button>
-            </div>
-          </div>
-        ))
-      )}
-
     </div>
   );
 }
