@@ -783,6 +783,13 @@ button{cursor:pointer;border:0}
   box-shadow:0 6px 22px #00000010;
 }
 @media(max-width:900px){
+
+  .topbar{
+    position:sticky;
+    top:0;
+    z-index:100;
+  }
+
   .layout{
     display:flex;
     flex-direction:column;
@@ -792,20 +799,27 @@ button{cursor:pointer;border:0}
   .cart{
     order:-1;
     position:sticky;
-    top:76px;
-    z-index:20;
+    top:92px;
+    z-index:90;
     background:#fff;
     border:1px solid #f1d28a;
     border-radius:20px;
     padding:14px;
     box-shadow:0 10px 25px #00000020;
-    margin-bottom:14px;
-    max-height:40vh;
+    margin-bottom:10px;
+    max-height:28vh;
     overflow:auto;
   }
 
+  .steps{
+    position:sticky;
+    top:330px;
+    z-index:80;
+    margin-bottom:14px;
+  }
+
   .content{
-    margin-top:4px;
+    margin-top:0;
   }
 
   .products{
@@ -849,5 +863,3 @@ button{cursor:pointer;border:0}
     box-shadow:0 8px 24px #00000040;
   }
 }
-
-
