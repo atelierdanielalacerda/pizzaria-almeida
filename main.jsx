@@ -156,6 +156,23 @@ function App() {
   function irParaCarrinho() {
   document.getElementById("carrinho")?.scrollIntoView({ behavior: "smooth" });
 }
+  function limparPedido(){
+  setCarrinho([]);
+  setPizzaSabores([]);
+  setBordaSelecionada('');
+  setMiniSabores([]);
+  setMiniQtd(20);
+  setBebidaQtd(1);
+  setCliente({
+    nome: '',
+    whatsapp: '',
+    endereco: '',
+    bairro: '',
+    tipoEntrega: 'entrega'
+  });
+  setPagamento('pix');
+  setEtapa(1);
+}
 
   function togglePizzaSabor(id) {
     const limite = tamanhosPizza[pizzaSize].maxSabores;
@@ -252,7 +269,10 @@ ${pagamento === 'cartao' ? `Taxa cartão: ${moeda(taxaCartao)}
     const url = `https://wa.me/${WHATSAPP_PIZZARIA}?text=${encodeURIComponent(resumoTexto())}`;
     setPedidosAdmin((old) => [pedido, ...old]);
     setWhatsUrl(url);
-    window.open(url, '_blank', 'noopener,noreferrer');
+   window.open(whatsUrl, '_blank');
+
+limparPedido();
+avisar('Pedido enviado com sucesso!');
     avisar('Pedido preparado para o WhatsApp');
   }
 
