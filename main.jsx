@@ -156,19 +156,24 @@ function App() {
   function irParaCarrinho() {
   document.getElementById("carrinho")?.scrollIntoView({ behavior: "smooth" });
 }
-  function limparPedido(){
+ function limparPedido(){
   setCarrinho([]);
+  setWhatsUrl('');
   setPizzaSabores([]);
   setBordaSelecionada('');
   setMiniSabores([]);
   setMiniQtd(20);
   setBebidaQtd(1);
+  setBebidaSelecionada('coca-1l');
+  setMostrarMini(false);
   setCliente({
     nome: '',
     whatsapp: '',
     endereco: '',
     bairro: '',
-    tipoEntrega: 'entrega'
+    tipoEntrega: 'entrega',
+    dataMiniPizza: '',
+    trocoDinheiro: ''
   });
   setPagamento('pix');
   setEtapa(1);
@@ -263,18 +268,32 @@ ${pagamento === 'cartao' ? `Taxa cartão: ${moeda(taxaCartao)}
 }
 
   function finalizarPedido() {
-    if (!carrinho.length) return avisar('Seu carrinho está vazio.');
-    if (!validarCliente()) return;
-    const pedido = { id: gerarId(), data: new Date().toLocaleString('pt-BR'), status: 'Novo', cliente: { ...cliente, bairroNome: bairroAtual?.nome }, carrinho, pagamento, totalItens, frete, taxaCartao, totalGeral };
-    const url = `https://wa.me/${WHATSAPP_PIZZARIA}?text=${encodeURIComponent(resumoTexto())}`;
-    setPedidosAdmin((old) => [pedido, ...old]);
-    setWhatsUrl(url);
-   window.open(whatsUrl, '_blank');
+  if (!carrinho.length) return avisar('Seu carrinho está vazio.');
+  if (!validarCliente()) return;
 
-limparPedido();
-avisar('Pedido enviado com sucesso!');
-    avisar('Pedido preparado para o WhatsApp');
-  }
+  const pedido = {
+    id: gerarId(),
+    data: new Date().toLocaleString('pt-BR'),
+    status: 'Novo',
+    cliente: { ...cliente, bairroNome: bairroAtual?.nome },
+    carrinho,
+    pagamento,
+    totalItens,
+    frete,
+    taxaCartao,
+    totalGeral
+  };
+
+  const url = `https://wa.me/${WHATSAPP_PIZZARIA}?text=${encodeURIComponent(resumoTexto())}`;
+
+  setPedidosAdmin((old) => [pedido, ...old]);
+  setWhatsUrl(url);
+
+  window.open(url, '_blank', 'noopener,noreferrer');
+
+  limparPedido();
+  avisar('Pedido enviado com sucesso!');
+}
 
   if (modoAdmin && !adminLogado) return <AdminLogin entrar={() => setAdminLogado(true)} voltar={() => setModoAdmin(false)} />;
   if (modoAdmin && adminLogado) return <AdminView pedidos={pedidosAdmin} setPedidos={setPedidosAdmin} voltar={() => { setModoAdmin(false); setAdminLogado(false); }} />;
